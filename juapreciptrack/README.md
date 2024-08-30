@@ -1,89 +1,103 @@
-# NetCDF4 to Parquet Conversion Pipeline
-
-## Overview
-
-This project is designed to convert NetCDF4 files stored in Google Cloud Storage (GCS) into Apache Parquet files, optimized for querying and filtering by timestamp and a hierarchical geospatial index (H3). The pipeline utilizes Ray and Dask for distributed processing, making it scalable and flexible enough to handle large datasets and complex workflows.
-
-### Data Source
-
-The source data consists of ERA5 total precipitation data for the year 2022, available in NetCDF4 format. The data can be accessed from the ARCO dataset hosted at the following GCS path:
-
-``gs://gcp-public-data-arco-era5/raw/date-variable-single_level/``
+# Steps to Run the Project
 
 
+This guide will walk you through setting up and running the project.
 
-### Pipeline Workflow
+This project processes precipitation data, integrates it with STAC catalogs, and optimizes it for use with Dask and Ray. The pipeline loads datasets, processes them into Parquet format, and updates a STAC catalog.
 
-The pipeline follows these key steps:
+## Prerequisites
 
-1. **Generate Kerchunk References**: Create lightweight references for NetCDF4 files to enable efficient data access.
-2. **Distributed Processing with Ray and Dask**: Process the data across multiple nodes using Ray and Dask.
-3. **Data Transformation and Enrichment**: Extract relevant variables, create H3 indices, and prepare the data for storage.
-4. **Load Data into Parquet**: Save the processed data into Parquet files on GCS.
-5. **STAC Catalog Management**: Update a SpatioTemporal Asset Catalog (STAC) for efficient metadata management and search capabilities.
+- **Python "^3.10"**: Ensure that Python is installed on your machine.
+- **Poetry**: This project uses [Poetry](https://python-poetry.org/) for dependency management.
 
-### Key Features
+## Setup Instructions
 
-- **Queryable Parquet Dataset**: The Parquet files support efficient filtering by timestamp and geospatial H3 indices.
-- **Scalable and Distributed Processing**: The pipeline leverages Ray and Dask for scalable processing across multiple nodes.
-- **Flexible Architecture**: Designed to handle large-scale geospatial data and machine learning workloads.
-- **STAC API Integration**: Uses the STAC API for managing and searching metadata, facilitating quick data discovery.
+1. **Install Poetry**
 
-### Considerations
+   If you don't have Poetry installed, you can install it using pip:
 
-#### Apache Beam vs. Ray & Dask
+   ```bash
+   pip install poetry
+    ```
 
-- **Apache Beam**: Ideal for processing tasks within the Google Cloud ecosystem, but less flexible for external data sources and machine learning workloads.
-- **Ray & Dask**: Chosen for their flexibility in handling large datasets and ability to integrate with other data sources, such as AWS S3 or NASA datasets. This approach also supports distributed machine learning workloads, making it more versatile for future extensions.
+   ```bash
+   poetry install
+   ```
 
-#### Search Engine Integration
+## 2. Configure and run the Project
 
-The pipeline uses the STAC API to manage metadata, allowing for efficient searches without loading entire Parquet files into memory. This supports queries such as:
-
-- Filtering by precipitation values.
-- Identifying regions (H3 indices) with specific precipitation characteristics.
-- Retrieving lists of Parquet files based on temporal and spatial criteria.
-
-### Why Kerchunk?
-
-When dealing with large-scale NetCDF4 data, Xarray (XR) is a powerful library due to its support for lazy loading and distributed processing with Dask. However, directly loading remote NetCDF4 files from GCS using `gcsfs` is not yet fully supported, leading to potential inefficiencies.
-
-#### Challenges with Direct NetCDF4 Access
-
-- **Inefficiencies**: Directly accessing remote NetCDF4 files can be slow and resource-intensive, especially when dealing with large datasets.
-- **Scalability Issues**: Downloading files locally for processing limits the ability to scale the pipeline across multiple nodes.
-
-#### Approach 1: Download Files Locally
-
-This method involves downloading the NetCDF4 files locally before processing them. While this ensures compatibility, it is not optimal for large-scale, distributed processing due to the time and storage resources required.
-
-#### Approach 2: Use Kerchunk for Efficient Access
-
-Kerchunk provides a more efficient solution by creating lightweight, JSON-based references to the NetCDF4 files. These references allow Xarray to load only the necessary data, avoiding the need to download entire files.
-
-**Benefits of Using Kerchunk:**
-
-- **Optimized Data Access**: Load only the required portions of the data, reducing memory usage and speeding up processing.
-- **Enable Distributed Processing**: Kerchunk references are easy to distribute across nodes, enhancing parallel processing capabilities.
-- **No Local Storage Requirements**: Eliminates the need for local storage of large files, saving both time and resources.
-
-#### Implementation in the Pipeline
-
-In this pipeline, Kerchunk is used to generate references for the NetCDF4 files stored in GCS. Xarray, combined with Kerchunk, reads these references efficiently. Ray is utilized to parallelize the generation and processing of these references, ensuring scalability and performance across large datasets.
-
-## Usage
-
-To execute the pipeline, run the `run_pipeline` function in the `pipeline_manager.py` module. 
-
-```python main.py```
-
-
-### Prerequisites
-```python
-Install poetry
-
+The project’s configuration is centralized in two key files: `config/config.py` and `config/settings.py`. These files are crucial for defining settings like file paths, batch sizes, and other environment-specific variables.
+```bash
 cd juapreciptrack
-poetry install
+python main.py
+```
+
+
+```python
+# config/config.py
+# This file defines directory paths and pipeline-specific settings. 
+# For example, the BATCH_SIZE and GCS_FILE_PATTERNS variables are used to control the data processing:
+
+BATCH_SIZE = 8
+
+GCS_FILE_PATTERNS = [
+    'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/12/*/total_precipitation/surface.nc',
+    'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/11/*/total_precipitation/surface.nc',
+]
+
+# Flags like CREATE_PARQUET, UPDATE_STAC, and SUPPRESS_WARNINGS are available to manage different aspects of the pipeline’s behavior.
+
+CREATE_PARQUET = True
+UPDATE_STAC = True
+SUPPRESS_WARNINGS = True
+
+# config/settings.py
+# This file contains the configuration for Ray and Dask, which are used for distributed computing:
+# It specifies CPU allocation, memory limits, logging configurations, and how Dask should be integrated with Ray.
+
+RAY_NUM_CPUS = os.cpu_count()
+DASK_MEMORY_LIMIT = '16GB'
+
+# Dask is configured to use Ray as its scheduler, ensuring efficient task execution and memory management.
+
+```
+### Dask Dashboard:
+
+**While the project is running, you can monitor the progress of each stage, as well as CPU and memory usage, through the Dask dashboard.**
+
+**Note:** 
+_If you notice that memory usage is high or the job is taking longer than expected, consider reducing the amount of data being processed. You can do this by adjusting the **file patterns and batch size** in the configuration._
+
+Once you run the project you will see the dask and ray dashboard link in the console
+
+```python
+ python main.py
+
+2024-08-30 14:54:29,044 INFO worker.py:1774 -- Started a local Ray instance. 
+View the RAY dashboard at 127.0.0.1:8265 
+Dask client initialized. 
+Dashboard available at: http://127.0.0.1:8787/status
 
 ```
 
+
+## Output Files
+
+Once the pipeline successfully completes, you will find two main directories inside the `DATA_DIR` (typically named `data`):
+
+1. **`catalog/`**: 
+   - Contains the STAC catalog files, organized by date. 
+   - Each date has a `collection.json` file along with corresponding Parquet items (`item-part.*.parquet`) and their associated metadata (`item-part.*.parquet.json`).
+
+2. **`parquet/`**:
+   - Stores the processed data in Parquet format, partitioned by day.
+   - Each day has multiple Parquet files (`part.*.parquet`), making it easy to manage and query the data by specific dates.
+
+These directories structure the processed data and STAC metadata, allowing for efficient data retrieval and cataloging.
+
+
+## how to use STAC catalog 
+
+The STAC catalog is a powerful tool for organizing and querying geospatial data. It provides a standardized way to describe and access datasets, making it easier to discover and use data across different platforms and tools.
+
+Jupyter Notebook Attached.
