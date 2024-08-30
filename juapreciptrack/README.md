@@ -61,7 +61,7 @@ DASK_MEMORY_LIMIT = '16GB'
 # Dask is configured to use Ray as its scheduler, ensuring efficient task execution and memory management.
 
 ```
-### Dask Dashboard:
+### Dask Dashboard:  [docs](https://docs.dask.org/en/stable/dashboard.html)
 
 **While the project is running, you can monitor the progress of each stage, as well as CPU and memory usage, through the Dask dashboard.**
 
@@ -85,19 +85,23 @@ Dashboard available at: http://127.0.0.1:8787/status
 
 Once the pipeline successfully completes, you will find two main directories inside the `DATA_DIR` (typically named `data`):
 
-1. **`catalog/`**: 
+1. **`catalog/`**:
+   - catalog.json : This is the catalog which will be keep a href for all
    - Contains the STAC catalog files, organized by date. 
    - Each date has a `collection.json` file along with corresponding Parquet items (`item-part.*.parquet`) and their associated metadata (`item-part.*.parquet.json`).
 
-2. **`parquet/`**:
+3. **`parquet/`**:
    - Stores the processed data in Parquet format, partitioned by day.
    - Each day has multiple Parquet files (`part.*.parquet`), making it easy to manage and query the data by specific dates.
 
 These directories structure the processed data and STAC metadata, allowing for efficient data retrieval and cataloging.
 
 
-## how to use STAC catalog 
+## How to use STAC catalog 
 
-The STAC catalog is a powerful tool for organizing and querying geospatial data. It provides a standardized way to describe and access datasets, making it easier to discover and use data across different platforms and tools.
+The [STAC](https://stacspec.org/en) catalog is a powerful tool for organizing and querying geospatial data. It provides a standardized way to describe and access datasets, making it easier to discover and use data across different platforms and tools.
 
 Jupyter Notebook Attached.
+https://github.com/bikash-jha2829/juapreciptask/blob/main/juapreciptrack/notebooks/read_stac.ipynb
+
+For more context how to use STAC as api refer: https://github.com/microsoft/PlanetaryComputerExamples/blob/main/quickstarts/reading-stac.ipynb
