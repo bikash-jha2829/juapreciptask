@@ -2,6 +2,13 @@
 
 ## NetCDF4 to Parquet Conversion Pipeline + STAC Catalog
 
+### PS
+- 🚀 **Dask, Ray, and Xarray** are our distributed superheroes for data processing!
+- 🖥️ **Running Locally?** Remember, we’re not in full driver-worker mode here, so stick with a smaller dataset for smooth sailing.
+- ⚡ **Shortcut Alert!** You could load data into **GeoPandas** and loop through it for faster local processing—but that’s not the distributed or production-grade way.
+- 📈 **Geek Out with Dask Dashboard!** Dive in to monitor memory usage and track stage progress like a pro.
+- 📚 **How to Run**: For detailed instructions, refer to the **README.md** inside.
+
 ## Overview
 
 This project is designed to convert NetCDF4 files stored in Google Cloud Storage (GCS) into Apache Parquet files, optimized for querying and filtering by timestamp and a hierarchical geospatial index (H3). The pipeline utilizes Ray and Dask for distributed processing, making it scalable and flexible enough to handle large datasets and complex workflows.
