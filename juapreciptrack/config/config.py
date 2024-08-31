@@ -11,13 +11,14 @@ RAY_SPILL_DIR = "./spill/"
 # Pipeline Configuration
 BATCH_SIZE = 8
 GCS_FILE_PATTERNS = [
-    'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/12/*/total_precipitation/surface.nc'
+    'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/12/11/total_precipitation/surface.nc',
+    # 'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/10/*/total_precipitation/surface.nc'  pass if we need to load all 2022/10 files
 ]
 # Flags to control pipeline execution
 CREATE_PARQUET = True
 UPDATE_STAC = True
 SUPPRESS_WARNINGS = True  # Logging and Warnings Configuration
-CHUNK_SIZE = {'time': 12, 'latitude': 720, 'longitude': 1440}
+CHUNK_SIZE = {'time': 24, 'latitude': 720, 'longitude': 1440} # optimize this param if you ran into OOM issue
 
 # STAC Catalog Configuration
 CATALOG_ID = "precipitation-stac-catalog"

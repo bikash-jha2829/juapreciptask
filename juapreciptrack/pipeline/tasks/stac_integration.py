@@ -55,7 +55,8 @@ def process_batch_and_update_catalog(batch, catalog):
         partition_on=['day'],
         compression='snappy',
         write_index=False,
-        overwrite=False
+        overwrite=False,
+        write_metadata_file=True
     )
 
     # Update the STAC catalog if needed
