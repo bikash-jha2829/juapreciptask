@@ -126,7 +126,7 @@ For more context how to use STAC as api refer: https://github.com/microsoft/Plan
 ## Local RUN logs
 
 <details>
-  <summary><b>Environment Setup and Installation Log</b></summary>
+  <summary><b>Environment Setup and Installation Log (click to open)</b></summary>
 
 ```bash
 (.venv) bikash@G9TLWLT47P juapreciptask-main % cd juapreciptrack 
