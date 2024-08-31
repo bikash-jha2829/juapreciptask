@@ -2,6 +2,29 @@
 
 ## NetCDF4 to Parquet Conversion Pipeline + STAC Catalog
 
+<!-- TOC -->
+* [JuaPrecipTask](#juapreciptask)
+  * [NetCDF4 to Parquet Conversion Pipeline + STAC Catalog](#netcdf4-to-parquet-conversion-pipeline--stac-catalog)
+    * [PS](#ps)
+  * [Overview](#overview)
+    * [Data Source](#data-source)
+    * [Pipeline Workflow](#pipeline-workflow)
+    * [Key Features](#key-features)
+    * [Considerations](#considerations)
+      * [Apache Beam vs. Ray & Dask](#apache-beam-vs-ray--dask)
+      * [Search Engine Integration](#search-engine-integration)
+    * [Why Kerchunk?](#why-kerchunk)
+      * [Challenges with Direct NetCDF4 Access](#challenges-with-direct-netcdf4-access)
+      * [Approach 1: Download Files Locally](#approach-1-download-files-locally)
+      * [Approach 2: Use Kerchunk for Efficient Access](#approach-2-use-kerchunk-for-efficient-access)
+      * [Implementation in the Pipeline](#implementation-in-the-pipeline)
+  * [Usage](#usage)
+    * [Prerequisites](#prerequisites)
+  * [Quick run](#quick-run)
+    * [Run tests](#run-tests)
+<!-- TOC -->
+
+
 ### PS
 - 🚀 **Dask, Ray, and Xarray** are our distributed superheroes for data processing!
 - 🖥️ **Running Locally?** Remember, we’re not in full driver-worker mode here, so stick with a smaller dataset for smooth sailing. (Refer juapreciptrack/config.py -> BATCH_SIZE)
@@ -9,6 +32,7 @@
 - 📈 **Geek Out with Dask Dashboard!** Dive in to monitor memory usage and track stage progress like a pro.
 - 📚 **How to Run**: For detailed instructions, refer to the **README.md** inside.
 - 📓 **STAC Catalog**: Check out our Jupyter Notebook for a straightforward example of how to query datasets on the STAC catalog. For more details, refer to the juapreciptrack/README.md file inside.
+- ⏱️ **Local Run Time** Processing one month of data, including creating and updating the STAC catalog, takes approximately 9 minutes. (12GB of RAM, 4 cores)
 
 ## Overview
 
