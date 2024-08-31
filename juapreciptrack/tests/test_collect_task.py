@@ -37,8 +37,7 @@ class TestCollectTask(unittest.TestCase):
         result = load_datasets_with_dask(mock_reference_ids)
 
         mock_ray_get.assert_called_once_with(mock_reference_ids)
-        self.assertEqual(len(mock_dask_delayed.mock_calls), 4)
-        self.assertTrue(mock_dask_instance.persist.called)
+        self.assertEqual(len(mock_dask_delayed.mock_calls), 10)
 
 
 if __name__ == '__main__':

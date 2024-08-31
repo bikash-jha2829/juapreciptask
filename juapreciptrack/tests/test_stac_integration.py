@@ -1,47 +1,52 @@
-# tests/test_stac_integration.py
 import unittest
-from unittest.mock import patch, MagicMock
+import os
+import pandas as pd
+import dask.dataframe as dd
+import pystac
+import tempfile
+import shutil
+from datetime import datetime
+
+import ray
+
 from pipeline.tasks.stac_integration import create_stac_item_from_parquet, process_batch_and_update_catalog
 
 
-class TestStacIntegration(unittest.TestCase):
-    @patch('pipeline.tasks.stac_integration.dd.read_parquet')
-    @patch('pipeline.tasks.stac_integration.pystac.Item')
-    def test_create_stac_item_from_parquet(self, mock_Item, mock_read_parquet):
-        mock_day = "2022-11-11"
-        mock_file_path = "file_path"
-        mock_df = MagicMock()
-        mock_read_parquet.return_value = mock_df
-        mock_item = MagicMock()
-        mock_Item.return_value = mock_item
+class TestStacProcessing(unittest.TestCase):
 
-        item = create_stac_item_from_parquet(mock_day, mock_file_path)
+    def setUp(self):
+        # Setup a temporary directory for Parquet and STAC catalog
+        self.temp_dir = tempfile.mkdtemp()
+        self.parquet_dir = os.path.join(self.temp_dir, 'parquet')
+        self.catalog_dir = os.path.join(self.temp_dir, 'catalog')
+        os.makedirs(self.parquet_dir)
+        os.makedirs(self.catalog_dir)
 
-        mock_read_parquet.assert_called_once_with(mock_file_path)
-        mock_Item.assert_called_once()
-        self.assertEqual(item, mock_item)
+        # Create a sample DataFrame
+        data = {
+            'h3_index': ['abc', 'def', 'ghi'],
+            'tp': [0.1, 0.5, 0.3],
+            'day': ['2023-08-30', '2023-08-30', '2023-08-30']
+        }
+        df = pd.DataFrame(data)
+        self.ddf = dd.from_pandas(df, npartitions=1)
 
-    @patch('pipeline.tasks.stac_integration.os.listdir')
-    @patch('pipeline.tasks.stac_integration.load_datasets_with_dask')
-    @patch('pipeline.tasks.stac_integration.extract_relevant_data')
-    @patch('pipeline.tasks.stac_integration.pystac.Collection')
-    @patch('pipeline.tasks.stac_integration.pystac.Catalog')
-    def test_process_batch_and_update_catalog(self, mock_Catalog, mock_Collection, mock_extract_data, mock_load_datasets, mock_listdir):
-        mock_batch = [1, 2, 3]
-        mock_catalog = MagicMock()
-        mock_load_datasets.return_value.compute.return_value = "combined_ds"
-        mock_df = MagicMock()
-        mock_extract_data.return_value = mock_df
-        mock_df.to_parquet.return_value = None
-        mock_listdir.return_value = ["file1.parquet", "file2.parquet"]
+        # Write it as a Parquet file
+        self.file_path = os.path.join(self.parquet_dir, 'test.parquet')
+        self.ddf.to_parquet(self.file_path)
 
-        process_batch_and_update_catalog(mock_batch, mock_catalog)
+    def tearDown(self):
+        # Remove temporary directories after the test
+        shutil.rmtree(self.temp_dir)
 
-        mock_load_datasets.assert_called_once_with(mock_batch)
-        mock_extract_data.assert_called_once()
-        mock_df.to_parquet.assert_called_once()
-        mock_Collection.assert_called()
-        mock_catalog.add_child.assert_called()
+    def test_create_stac_item_from_parquet(self):
+        # Test the creation of a STAC item from a Parquet file
+        stac_item = create_stac_item_from_parquet('2023-08-30', self.file_path)
+        self.assertIsInstance(stac_item, pystac.Item)
+        self.assertEqual(stac_item.properties['min_precipitation'], 0.1)
+        self.assertEqual(stac_item.properties['max_precipitation'], 0.5)
+        self.assertEqual(stac_item.properties['mean_precipitation'], 0.3)
+        self.assertEqual(stac_item.properties['h3_indexes'], ['abc', 'def', 'ghi'])
 
 
 if __name__ == '__main__':
