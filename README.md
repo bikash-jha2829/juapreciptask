@@ -23,6 +23,9 @@ The source data consists of ERA5 total precipitation data for the year 2022, ava
 
 ### Pipeline Workflow
 
+![ARC](https://github.com/user-attachments/assets/a01439e1-cb93-48a1-8cb4-223d2a1827cb)
+
+
 The pipeline follows these key steps:
 
 1. **Generate Kerchunk References**: Create lightweight references for NetCDF4 files to enable efficient data access.
@@ -42,7 +45,7 @@ The pipeline follows these key steps:
 
 #### Apache Beam vs. Ray & Dask
 
-- **Apache Beam**: Ideal for processing tasks within the Google Cloud ecosystem, but less flexible for external data sources and machine learning workloads.
+- **Apache Beam**: Ideal for processing tasks within the Google Cloud ecosystem, but less flexible for external data sources(S3/NASA ERA5/SENTINEL DATASET) and machine learning workloads.
 - **Ray & Dask**: Chosen for their flexibility in handling large datasets and ability to integrate with other data sources, such as AWS S3 or NASA datasets. This approach also supports distributed machine learning workloads, making it more versatile for future extensions.
 
 #### Search Engine Integration
@@ -59,7 +62,7 @@ When dealing with large-scale NetCDF4 data, Xarray (XR) is a powerful library du
 
 #### Challenges with Direct NetCDF4 Access
 
-- **Inefficiencies**: Directly accessing remote NetCDF4 files can be slow and resource-intensive, especially when dealing with large datasets.
+- **Inefficiencies**: Directly accessing remote NetCDF4 files can be slow and resource-intensive and not supported with Xarray, especially when dealing with large datasets.
 - **Scalability Issues**: Downloading files locally for processing limits the ability to scale the pipeline across multiple nodes.
 
 #### Approach 1: Download Files Locally
