@@ -9,7 +9,7 @@ PARQUET_DIR = os.path.join(DATA_DIR, 'parquet')
 RAY_SPILL_DIR = "./spill/"
 
 # Pipeline Configuration
-BATCH_SIZE = 16
+BATCH_SIZE = 8
 GCS_FILE_PATTERNS = [
     'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/12/11/total_precipitation/surface.nc',
     # 'gs://gcp-public-data-arco-era5/raw/date-variable-single_level/2022/10/*/total_precipitation/surface.nc'  pass if we need to load all 2022/10 files
