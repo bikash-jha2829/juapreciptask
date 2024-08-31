@@ -283,7 +283,7 @@ Package operations: 128 installs, 0 updates, 0 removals
 </details>
 
 <details open>
-  <summary><b>Project Execution Log</b></summary>
+  <summary><b>Project Execution Log (click to collapse)</b></summary>
 
 ```bash
 (.venv) bikash@G9TLWLT47P juapreciptask-main % cd juapreciptrack
@@ -332,7 +332,7 @@ The `catalog` directory contains collections that are partitioned by date. Each 
 The structure also includes a STAC index organized by date and H3 indices.
 
 <details open>
-  <summary><b>Directory Structure:</b></summary>
+  <summary><b>Directory Structure:(click to collapse)</b></summary>
 
 
 ```bash
@@ -361,7 +361,7 @@ data/
 The `parquet` directory contains parquet files that are partitioned by date. Each date-specific folder holds multiple parts of the parquet files.
 
 <details open>
-  <summary><b>Directory Structure:</b></summary>
+  <summary><b>Directory Structure:(click to collapse)</b></summary>
 
 ```bash
 data/
