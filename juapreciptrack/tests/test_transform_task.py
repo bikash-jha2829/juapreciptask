@@ -42,9 +42,9 @@ class TestExtractRelevantData(unittest.TestCase):
             h3.geo_to_h3(37.7749, -122.4194, 10)
         ] * 27
 
-        self.assertListEqual(result_df['h3_index'].tolist(), expected_h3_indices)
-        self.assertListEqual(result_df['day'].tolist(), ['2023-08-30'])
-        self.assertListEqual(result_df['tp'].tolist(), [0.1, 0.5, 0.3])
+        self.assertListEqual(result_df['h3_index'].compute().tolist(), expected_h3_indices)
+        self.assertListEqual(result_df['day'].compute().unique().tolist(), ['2023-08-30'])
+        self.assertListEqual(result_df['tp'].compute().unique().tolist(), [0.1, 0.5, 0.3])
 
 
 if __name__ == '__main__':
