@@ -17,6 +17,15 @@ logger = logging.getLogger(__name__)
 
 
 def run_pipeline():
+    """
+    Run the complete data processing pipeline. This function handles the initialization
+    of logging, directory structure, and the Ray and Dask clients. It processes data files
+    based on patterns defined in the configuration, generates Kerchunk references, and updates
+    the STAC catalog if configured to do so.
+
+    Returns:
+        None
+    """
     initialize_logging()  # Initialize logging before anything else
     start = time.time()
 
@@ -47,6 +56,8 @@ def run_pipeline():
     batch_size = BATCH_SIZE
     total_batches = len(all_reference_ids) // batch_size + (len(all_reference_ids) % batch_size > 0)
     logging.info(f"Total batches to process: {total_batches}")
+
+    # Process each batch of references
     for i in range(0, len(all_reference_ids), batch_size):
         batch = all_reference_ids[i:i + batch_size]
         # Dask progress bar to track the computation progress
@@ -54,6 +65,7 @@ def run_pipeline():
             process_batch_and_update_catalog(batch, catalog)
         logger.info(f"Processed batch {i // batch_size + 1} of {total_batches}")
 
+    # Save and normalize the STAC catalog if updated
     if UPDATE_STAC:
         catalog.normalize_hrefs(CATALOG_DIR)
         catalog.save()
@@ -62,11 +74,13 @@ def run_pipeline():
     elapsed_time_minutes = (end - start) / 60
     logger.info(f"Processing complete. Computation took {elapsed_time_minutes:.2f} minutes")
 
+    # Cleanup the Dask client
     try:
         client.close()
     except Exception as e:
         logger.error(f"Error during Dask client shutdown: {e}")
 
+    # Shutdown Ray
     try:
         ray.shutdown()
     except Exception as e:
