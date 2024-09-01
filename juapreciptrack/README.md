@@ -24,8 +24,8 @@ This project processes precipitation data, integrates it with STAC catalogs, and
 
 ## Prerequisites
 
-- **Python "^3.10"**: Ensure that Python is installed on your machine.
-- **Poetry**: This project uses [Poetry](https://python-poetry.org/) for dependency management.
+-[ ] **Python "^3.10"**: Ensure that Python is installed on your machine.
+-[ ] **Poetry**: This project uses [Poetry](https://python-poetry.org/) for dependency management.
 
 ## Setup Instructions
 
@@ -116,10 +116,77 @@ These directories structure the processed data and STAC metadata, allowing for e
 
 ## How to use STAC catalog 
 
+## How to Use STAC Catalog
+
 The [STAC](https://stacspec.org/en) catalog is a powerful tool for organizing and querying geospatial data. It provides a standardized way to describe and access datasets, making it easier to discover and use data across different platforms and tools.
 
-Jupyter Notebook Attached.
-https://github.com/bikash-jha2829/juapreciptask/blob/main/juapreciptrack/notebooks/read_stac.ipynb
+### Jupyter Notebook Example
+
+You can explore an example Jupyter Notebook to understand how to read and query a STAC catalog:
+
+- [Example Notebook](https://github.com/bikash-jha2829/juapreciptask/blob/main/juapreciptrack/notebooks/read_stac.ipynb)
+
+### Flask-based API for Querying a SpatioTemporal Asset Catalog (STAC)
+
+This project includes a Flask-based API to query a SpatioTemporal Asset Catalog (STAC).
+
+#### Running the Flask API
+
+You can run the Flask API by providing the path to your STAC catalog JSON file:
+
+```bash
+python stac_flask_query_api.py --catalog ../data/catalog/catalog.json
+```
+
+#### API Endpoints
+
+1. **Root Endpoint**
+
+   This endpoint simply returns a welcome message.
+
+   ```bash
+   curl -X GET "http://127.0.0.1:5000/"
+   ```
+
+2. **/search-parquet Endpoint**
+
+   This endpoint returns the paths of Parquet files associated with a given H3 index and within a specified datetime range.
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-parquet" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z" \
+   --data-urlencode "h3_index=8a0326233ab7fff"
+   ```
+
+3. **/search-h3 Endpoint**
+
+   This endpoint returns distinct H3 indexes that meet specific precipitation criteria within a given datetime range.
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-h3" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z" \
+   --data-urlencode "min_precipitation=0.01" \
+   --data-urlencode "max_precipitation=0.03" \
+   --data-urlencode "filter_type=max"
+   ```
+
+#### Additional Examples
+
+- **Without Precipitation Filters (for /search-h3):**
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-h3" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z"
+   ```
+
+- **With Only a Specific H3 Index (for /search-parquet):**
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-parquet" \
+   --data-urlencode "h3_index=8a0326233ab7fff"
+   ```
+
+
 
 For more context how to use STAC as api refer: https://github.com/microsoft/PlanetaryComputerExamples/blob/main/quickstarts/reading-stac.ipynb
 
@@ -380,4 +447,3 @@ data/
     └── ... (other dates)
 ```
 </details>
-
