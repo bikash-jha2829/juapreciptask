@@ -14,7 +14,12 @@ This project processes precipitation data, integrates it with STAC catalogs, and
   * [2. Configure and run the Project](#2-configure-and-run-the-project)
     * [Dask Dashboard:  docs](#dask-dashboard-docs)
   * [Output Files](#output-files)
-  * [How to use STAC catalog](#how-to-use-stac-catalog-)
+  * [How to Use STAC Catalog](#how-to-use-stac-catalog)
+    * [Jupyter Notebook Example](#jupyter-notebook-example)
+    * [Flask-based API for Querying a SpatioTemporal Asset Catalog (STAC)](#flask-based-api-for-querying-a-spatiotemporal-asset-catalog-stac)
+      * [Running the Flask API](#running-the-flask-api)
+      * [API Endpoints](#api-endpoints)
+      * [Additional Examples](#additional-examples)
   * [Local RUN logs](#local-run-logs)
     * [What happens after running the project?](#what-happens-after-running-the-project)
         * [1. Catalog Directory](#1-catalog-directory)
@@ -113,8 +118,6 @@ Once the pipeline successfully completes, you will find two main directories ins
 
 These directories structure the processed data and STAC metadata, allowing for efficient data retrieval and cataloging.
 
-
-## How to use STAC catalog 
 
 ## How to Use STAC Catalog
 
@@ -368,13 +371,8 @@ Processing batch with 8 references...
 STAC catalog update enabled: True
 Updating STAC catalog...
 2024-08-31 20:16:31,030 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle dd97d1ca1fbd8a22d4f68f2a7dd0f9c8 initialized by task ('shuffle-transfer-dd97d1ca1fbd8a22d4f68f2a7dd0f9c8', 9) executed on worker tcp://127.0.0.1:54155
-2024-08-31 20:16:37,096 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle dd97d1ca1fbd8a22d4f68f2a7dd0f9c8 deactivated due to stimulus 'task-finished-1725128197.093463'
 Processing 8 unique days...
-2024-08-31 20:16:38,446 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle 54c1ae0e51e45798b8d258354cc58541 initialized by task ('shuffle-transfer-54c1ae0e51e45798b8d258354cc58541', 0) executed on worker tcp://127.0.0.1:54155
-2024-08-31 20:16:38,587 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle 54c1ae0e51e45798b8d258354cc58541 deactivated due to stimulus 'task-finished-1725128198.586661'
 ...
-2024-08-31 20:24:16,183 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle ced8964f8b674f93abe8f3c5f32b5355 initialized by task ('shuffle-transfer-ced8964f8b674f93abe8f3c5f32b5355', 0) executed on worker tcp://127.0.0.1:54156
-2024-08-31 20:24:16,329 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle ced8964f8b674f93abe8f3c5f32b5355 deactivated due to stimulus 'task-finished-1725128656.327584'
 2024-08-31 20:24:17,153 - pipeline.tasks.stac_integration - INFO - Saving collection for day 2022-12-31 to /Users/bikash/planet/juagit/juapreciptask-main/data/catalog/collection-2022-12-31
 2024-08-31 20:24:17,569 - pipeline.tasks.stac_integration - INFO - Processed and updated catalog for batch with 7 references
 2024-08-31 20:24:17,592 - pipeline.pipeline_manager - INFO - Processed batch 4 of 4
