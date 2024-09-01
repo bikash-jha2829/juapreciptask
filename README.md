@@ -27,7 +27,7 @@
 
 ### PS
 - 🚀 **Dask, Ray, and Xarray** are our distributed superheroes for data processing!
-- 🖥️ **Running Locally?** Remember, we’re not in full driver-worker mode here, so stick with a smaller dataset for smooth sailing. (Refer juapreciptrack/config.py -> BATCH_SIZE)
+- 🖥️ **Running Locally?** Remember, we’re not in full driver-worker mode here, so stick with a smaller dataset for smooth sailing. (Refer juapreciptrack/config.py -> BATCH_SIZE & GCS_FILE_PATTERNS)
 - ⚡ **Shortcut Alert!** You could load data into **GeoPandas** and loop through it for faster local processing—but that’s not the distributed or production-grade way.
 - 📈 **Geek Out with Dask Dashboard!** Dive in to monitor memory usage and track stage progress like a pro.
 - 📚 **How to Run**: For detailed instructions, refer to the **README.md** inside.
