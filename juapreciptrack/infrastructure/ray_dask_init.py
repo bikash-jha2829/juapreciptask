@@ -12,7 +12,7 @@ from config.settings import (
     RAY_OBJECT_STORE_MEMORY,
     DASK_MEMORY_LIMIT,
     DASK_CONFIG,
-    SUPPRESS_WARNINGS
+    SUPPRESS_WARNINGS, DASK_WORKER_THREADS, DASK_NUM_WORKERS
 )
 
 
@@ -39,9 +39,9 @@ def initialize_ray_and_dask():
     dask.config.set(DASK_CONFIG)
     # Initialize LocalCluster with specific worker and memory settings
     cluster = LocalCluster(
-        n_workers=4,  # Number of workers
-        threads_per_worker=4,  # Ensuring one thread per worker
-        memory_limit="16GB",  # Memory limit per worker
+        n_workers=DASK_NUM_WORKERS,  # Number of workers
+        threads_per_worker=DASK_WORKER_THREADS,  # Ensuring one thread per worker
+        memory_limit=DASK_MEMORY_LIMIT,  # Memory limit per worker
         local_directory=RAY_SPILL_DIR,  # Spill directory
     )
 
