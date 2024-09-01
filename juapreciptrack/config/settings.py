@@ -9,6 +9,8 @@ RAY_OBJECT_STORE_MEMORY = 2 * 1024 ** 3  # Memory allocated to Ray's object stor
 
 # Dask configuration
 DASK_MEMORY_LIMIT = '16GB'  # Memory limit for Dask workers
+DASK_WORKER_THREADS = 2  # Number of threads per Dask worker
+DASK_NUM_WORKERS = 4  # Number of Dask workers
 DASK_SCHEDULER = "ray_dask_get"  # Scheduler to use with Dask (Ray's Dask integration)
 DASK_SPILL_DIR = "./spill/"  # Directory for Dask worker spill files
 DASK_CONFIG = {
@@ -21,10 +23,11 @@ DASK_CONFIG = {
     # Logging configuration for Dask
     "logging": {
         "distributed": "INFO",  # Suppress distributed warnings, only show errors
-        "ray": "INFO"  # Suppress Ray warnings, only show errors
+        "ray": "INFO",  # Suppress Ray warnings, only show errors
+        'distributed.shuffle._scheduler_plugin': 'ERROR',  # Suppress shuffle plugin warnings
+
     }
 
 }
 
 SUPPRESS_WARNINGS = True  # Control whether to suppress all warnings
-
