@@ -1,5 +1,4 @@
 import logging
-
 import dask
 import ray
 import xarray as xr
@@ -8,7 +7,15 @@ from config.config import CHUNK_SIZE
 
 
 def load_datasets_with_dask(reference_ids):
-    """Load datasets using Dask, leveraging the persisted Kerchunk references."""
+    """
+    Load datasets using Dask, leveraging the persisted Kerchunk references.
+
+    Args:
+        reference_ids (list): A list of Ray object references to Kerchunk references.
+
+    Returns:
+        xr.Dataset: An optimized xarray Dataset concatenated along the 'time' dimension.
+    """
     references = ray.get(reference_ids)
     datasets = [
         dask.delayed(load_single_dataset)(reference) for reference in references
@@ -21,7 +28,17 @@ def load_datasets_with_dask(reference_ids):
 
 
 def load_single_dataset(reference):
-    """Load a single dataset given a Kerchunk reference."""
+    """
+    Load a single dataset given a Kerchunk reference.
+    The dataset is loaded with xarray using the Kerchunk engine,
+    which allows for remote and lazy loading from cloud storage.
+
+    Args:
+        reference (str): A Kerchunk reference to a dataset.
+
+    Returns:
+        xr.Dataset: An xarray Dataset loaded using the Kerchunk engine.
+    """
     ds = xr.open_dataset(
         reference,
         engine='kerchunk',

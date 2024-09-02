@@ -14,7 +14,12 @@ This project processes precipitation data, integrates it with STAC catalogs, and
   * [2. Configure and run the Project](#2-configure-and-run-the-project)
     * [Dask Dashboard:  docs](#dask-dashboard-docs)
   * [Output Files](#output-files)
-  * [How to use STAC catalog](#how-to-use-stac-catalog-)
+  * [How to Use STAC Catalog](#how-to-use-stac-catalog)
+    * [Jupyter Notebook Example](#jupyter-notebook-example)
+    * [Flask-based API for Querying a SpatioTemporal Asset Catalog (STAC)](#flask-based-api-for-querying-a-spatiotemporal-asset-catalog-stac)
+      * [Running the Flask API](#running-the-flask-api)
+      * [API Endpoints](#api-endpoints)
+      * [Additional Examples](#additional-examples)
   * [Local RUN logs](#local-run-logs)
     * [What happens after running the project?](#what-happens-after-running-the-project)
         * [1. Catalog Directory](#1-catalog-directory)
@@ -24,8 +29,8 @@ This project processes precipitation data, integrates it with STAC catalogs, and
 
 ## Prerequisites
 
-- **Python "^3.10"**: Ensure that Python is installed on your machine.
-- **Poetry**: This project uses [Poetry](https://python-poetry.org/) for dependency management.
+-[ ] **Python "^3.10"**: Ensure that Python is installed on your machine.
+-[ ] **Poetry**: This project uses [Poetry](https://python-poetry.org/) for dependency management.
 
 ## Setup Instructions
 
@@ -114,12 +119,77 @@ Once the pipeline successfully completes, you will find two main directories ins
 These directories structure the processed data and STAC metadata, allowing for efficient data retrieval and cataloging.
 
 
-## How to use STAC catalog 
+## How to Use STAC Catalog
 
 The [STAC](https://stacspec.org/en) catalog is a powerful tool for organizing and querying geospatial data. It provides a standardized way to describe and access datasets, making it easier to discover and use data across different platforms and tools.
 
-Jupyter Notebook Attached.
-https://github.com/bikash-jha2829/juapreciptask/blob/main/juapreciptrack/notebooks/read_stac.ipynb
+### Jupyter Notebook Example
+
+You can explore an example Jupyter Notebook to understand how to read and query a STAC catalog:
+
+- [Example Notebook](https://github.com/bikash-jha2829/juapreciptask/blob/main/juapreciptrack/notebooks/read_stac.ipynb)
+
+### Flask-based API for Querying a SpatioTemporal Asset Catalog (STAC)
+
+This project includes a Flask-based API to query a SpatioTemporal Asset Catalog (STAC).
+
+#### Running the Flask API
+
+You can run the Flask API by providing the path to your STAC catalog JSON file:
+
+```bash
+python stac_flask_query_api.py --catalog ../data/catalog/catalog.json
+```
+
+#### API Endpoints
+
+1. **Root Endpoint**
+
+   This endpoint simply returns a welcome message.
+
+   ```bash
+   curl -X GET "http://127.0.0.1:5000/"
+   ```
+
+2. **/search-parquet Endpoint**
+
+   This endpoint returns the paths of Parquet files associated with a given H3 index and within a specified datetime range.
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-parquet" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z" \
+   --data-urlencode "h3_index=8a0326233ab7fff"
+   ```
+
+3. **/search-h3 Endpoint**
+
+   This endpoint returns distinct H3 indexes that meet specific precipitation criteria within a given datetime range.
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-h3" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z" \
+   --data-urlencode "min_precipitation=0.01" \
+   --data-urlencode "max_precipitation=0.03" \
+   --data-urlencode "filter_type=max"
+   ```
+
+#### Additional Examples
+
+- **Without Precipitation Filters (for /search-h3):**
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-h3" \
+   --data-urlencode "datetime_range=2022-12-01T00:00:00Z/2022-12-31T23:59:59Z"
+   ```
+
+- **With Only a Specific H3 Index (for /search-parquet):**
+
+   ```bash
+   curl -G "http://127.0.0.1:5000/search-parquet" \
+   --data-urlencode "h3_index=8a0326233ab7fff"
+   ```
+
+
 
 For more context how to use STAC as api refer: https://github.com/microsoft/PlanetaryComputerExamples/blob/main/quickstarts/reading-stac.ipynb
 
@@ -301,13 +371,8 @@ Processing batch with 8 references...
 STAC catalog update enabled: True
 Updating STAC catalog...
 2024-08-31 20:16:31,030 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle dd97d1ca1fbd8a22d4f68f2a7dd0f9c8 initialized by task ('shuffle-transfer-dd97d1ca1fbd8a22d4f68f2a7dd0f9c8', 9) executed on worker tcp://127.0.0.1:54155
-2024-08-31 20:16:37,096 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle dd97d1ca1fbd8a22d4f68f2a7dd0f9c8 deactivated due to stimulus 'task-finished-1725128197.093463'
 Processing 8 unique days...
-2024-08-31 20:16:38,446 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle 54c1ae0e51e45798b8d258354cc58541 initialized by task ('shuffle-transfer-54c1ae0e51e45798b8d258354cc58541', 0) executed on worker tcp://127.0.0.1:54155
-2024-08-31 20:16:38,587 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle 54c1ae0e51e45798b8d258354cc58541 deactivated due to stimulus 'task-finished-1725128198.586661'
 ...
-2024-08-31 20:24:16,183 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle ced8964f8b674f93abe8f3c5f32b5355 initialized by task ('shuffle-transfer-ced8964f8b674f93abe8f3c5f32b5355', 0) executed on worker tcp://127.0.0.1:54156
-2024-08-31 20:24:16,329 - distributed.shuffle._scheduler_plugin - WARNING - Shuffle ced8964f8b674f93abe8f3c5f32b5355 deactivated due to stimulus 'task-finished-1725128656.327584'
 2024-08-31 20:24:17,153 - pipeline.tasks.stac_integration - INFO - Saving collection for day 2022-12-31 to /Users/bikash/planet/juagit/juapreciptask-main/data/catalog/collection-2022-12-31
 2024-08-31 20:24:17,569 - pipeline.tasks.stac_integration - INFO - Processed and updated catalog for batch with 7 references
 2024-08-31 20:24:17,592 - pipeline.pipeline_manager - INFO - Processed batch 4 of 4
@@ -380,4 +445,3 @@ data/
     └── ... (other dates)
 ```
 </details>
-

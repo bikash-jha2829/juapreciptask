@@ -14,14 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 def create_stac_item_from_parquet(day, file_path):
-    """Create a STAC item from a Parquet file."""
+    """
+    Create a STAC item from a Parquet file.
+
+    Args:
+        day (str): The day corresponding to the data in 'YYYY-MM-DD' format.
+        file_path (str): The file path to the Parquet file.
+
+    Returns:
+        pystac.Item: A STAC item with metadata extracted from the Parquet file.
+    """
     df_file = dd.read_parquet(file_path, columns=['h3_index', 'tp', 'day'])
 
+    # Compute necessary statistics
     h3_indexes_file = df_file['h3_index'].unique().compute()
     min_tp_file = df_file['tp'].min().compute()
     max_tp_file = df_file['tp'].max().compute()
     mean_tp_file = df_file['tp'].mean().compute()
 
+    # Create the STAC item
     item = pystac.Item(
         id=f"item-{os.path.basename(file_path)}",
         geometry=None,
@@ -35,20 +46,30 @@ def create_stac_item_from_parquet(day, file_path):
         }
     )
 
+    # Add Parquet file as an asset to the item
     item.add_asset("parquet", pystac.Asset(href=file_path, media_type="application/x-parquet"))
     return item
 
 
 def process_batch_and_update_catalog(batch, catalog):
-    """Process a batch of reference IDs, write to Parquet, and update the STAC catalog."""
-    print(f"Processing batch with {len(batch)} references...")
+    """
+    Process a batch of reference IDs, write the processed data to Parquet, and update the STAC catalog if required.
+
+    Args:
+        batch (list): A list of Ray object references representing the datasets to be processed.
+        catalog (pystac.Catalog): The STAC catalog to be updated.
+
+    Returns:
+        None
+    """
+    logger.info(f"Processing batch with {len(batch)} references...")
 
     # Load and process datasets
     combined_ds = load_datasets_with_dask(batch)
     combined_ds = combined_ds.compute()
     df = extract_relevant_data(combined_ds)
 
-    # Efficient bulk writing with partitioning
+    # Write the processed data to Parquet with partitioning for efficient access
     df.to_parquet(
         PARQUET_DIR,
         engine='pyarrow',
@@ -95,7 +116,7 @@ def process_batch_and_update_catalog(batch, catalog):
                 collection.add_item(stac_item)
 
             # Save the collection for the day
-            logger.info(f"Saving collection for day {day} to {collection_path}")
+            logger.debug(f"Saving collection for day {day} to {collection_path}")
             collection.normalize_hrefs(collection_path)
             collection.save()
 
